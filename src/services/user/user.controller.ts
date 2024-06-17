@@ -1,21 +1,51 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
 import UserService from './user.service';
-import { RegisterUser } from './user.schema.request';
-import STATUS from 'src/resp/status';
-import MSG from 'src/resp/msg';
+import { UserDto, UpdateUserEmailDto } from './user.dto';
+import { AuthGuard, AuthParam } from 'src/auth/auth.decorator';
+import Auth from 'src/auth/auth';
+import { AccessDenied } from 'src/errors';
+import { EmailsMustDifferError } from './errors';
+import { strictUserValidation } from 'src/auth/misc';
 
 @Controller()
 export default class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly service: UserService) {}
 
   @Get('/users/:id')
-  async getInfo(@Param('id') id: number) {
-    return id;
+  async getInfo(@Param('id', ParseIntPipe) id: number) {
+    return await this.service.getInfo(id);
   }
 
-  @Post('/users')
-  async register(@Body() body: RegisterUser) {
-    this.userService.register(body.email, body.password);
-    return { status: STATUS.OK, email: body.email, msg: MSG.USER_REGISTERED };
+  @Put('/users/:id')
+  @UseGuards(AuthGuard)
+  async updateEmail(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserEmailDto,
+    @AuthParam() auth: Auth,
+  ) {
+    strictUserValidation(auth, id);
+    if (auth.user.email === dto.email) {
+      throw new EmailsMustDifferError();
+    }
+    return await this.service.updateEmail(id, dto.email);
+  }
+
+  @Post('/users/login')
+  async login(@Body() dto: UserDto) {
+    return await this.service.login(dto.email, dto.password);
+  }
+
+  @Post('/users/register')
+  async register(@Body() dto: UserDto) {
+    return await this.service.register(dto.email, dto.password);
   }
 }
