@@ -12,7 +12,6 @@ import UserService from './user.service';
 import { UserDto, UpdateUserEmailDto } from './user.dto';
 import { AuthGuard, AuthParam } from 'src/auth/auth.decorator';
 import Auth from 'src/auth/auth';
-import { AccessDenied } from 'src/errors';
 import { EmailsMustDifferError } from './errors';
 import { strictUserValidation } from 'src/auth/misc';
 

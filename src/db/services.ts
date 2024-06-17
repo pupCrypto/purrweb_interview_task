@@ -11,8 +11,8 @@ export class DbCommentService {
     private commentsRepository: Repository<Comment>,
   ) {}
 
-  async createComment(cardId: number, name: string) {
-    return await this.commentsRepository.save({ card_id: cardId, name });
+  async createComment(cardId: number, content: string) {
+    return await this.commentsRepository.save({ card_id: cardId, content });
   }
 
   async getComment(
@@ -47,10 +47,11 @@ export class DbCommentService {
       .getMany();
   }
 
-  async updateComment(commentId: number, name: string) {
-    return await this.commentsRepository.save({ id: commentId, name });
+  async updateComment(commentId: number, content: string) {
+    return await this.commentsRepository.save({ id: commentId, content });
   }
 }
+
 @Injectable()
 export class DbCardService {
   constructor(

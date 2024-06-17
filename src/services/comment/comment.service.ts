@@ -25,6 +25,7 @@ export default class CommentService extends CommentBelonger {
     content: string,
   ) {
     await this.checkCardBelongsToUser(userId, colId, cardId);
+    console.log(userId, colId, cardId, content);
     try {
       const comment = await this.commentsMan.createComment(cardId, content);
       return { status: STATUS.OK, id: comment.id, msg: MSG.COMMENT_CREATED };
@@ -72,6 +73,6 @@ export default class CommentService extends CommentBelonger {
   ) {
     await this.checkCommentBelongsToUser(userId, colId, cardId, comId);
     await this.commentsMan.updateComment(comId, name);
-    return { status: STATUS.OK, msg: MSG.CARD_UPDATED };
+    return { status: STATUS.OK, msg: MSG.COMMENT_UPDATED };
   }
 }
