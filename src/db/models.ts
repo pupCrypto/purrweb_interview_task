@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   Unique,
+  OneToMany,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -17,6 +18,9 @@ export class User {
 
   @Column({ nullable: false })
   password: string;
+
+  @OneToMany(() => UserColumn, (column) => column.user)
+  columns: UserColumn[];
 }
 
 @Entity()
@@ -34,6 +38,9 @@ export class UserColumn {
 
   @Column()
   user_id: number;
+
+  @OneToMany(() => Card, (card) => card.column)
+  cards: Card[];
 }
 
 @Entity()
@@ -51,6 +58,9 @@ export class Card {
 
   @Column({ nullable: false, length: 64 })
   name: string;
+
+  @OneToMany(() => Comment, (comment) => comment.card)
+  comments: Comment[];
 }
 
 @Entity()

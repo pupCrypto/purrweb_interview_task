@@ -11,7 +11,7 @@ export class DbCommentService {
     private commentsRepository: Repository<Comment>,
   ) {}
 
-  async createComment(cardId: number, content: string) {
+  async createComment(cardId: number, content: string): Promise<Comment> {
     return await this.commentsRepository.save({ card_id: cardId, content });
   }
 
@@ -20,7 +20,7 @@ export class DbCommentService {
     colId: number,
     cardId: number,
     commentId: number,
-  ) {
+  ): Promise<Comment> {
     return await this.commentsRepository
       .createQueryBuilder('comment')
       .leftJoin('card', 'card', 'card.id = :cardId', { cardId })
@@ -34,7 +34,11 @@ export class DbCommentService {
       .getOne();
   }
 
-  async getComments(userId: number, colId: number, cardId: number) {
+  async getComments(
+    userId: number,
+    colId: number,
+    cardId: number,
+  ): Promise<Comment[]> {
     return await this.commentsRepository
       .createQueryBuilder('comment')
       .leftJoin('card', 'card', 'card.id = :cardId', { cardId })
@@ -47,7 +51,7 @@ export class DbCommentService {
       .getMany();
   }
 
-  async updateComment(commentId: number, content: string) {
+  async updateComment(commentId: number, content: string): Promise<Comment> {
     return await this.commentsRepository.save({ id: commentId, content });
   }
 }
@@ -59,34 +63,36 @@ export class DbCardService {
     private cardsRepository: Repository<Card>,
   ) {}
 
-  async createCard(colId: number, name: string) {
+  async createCard(colId: number, name: string): Promise<Card> {
     return await this.cardsRepository.save({ name, column_id: colId });
   }
 
-  async getCard(userId: number, colId: number, cardId: number) {
+  async getCard(userId: number, colId: number, cardId: number): Promise<Card> {
     return await this.cardsRepository
       .createQueryBuilder('card')
       .leftJoin('user_column', 'user_column', 'user_column.id = :colId', {
         colId,
       })
+      .leftJoinAndSelect('card.comments', 'comments')
       .where('user_column.user_id = :userId', { userId })
       .andWhere('user_column.id = :colId', { colId })
       .andWhere('card.id = :cardId', { cardId })
       .getOne();
   }
 
-  async getCards(userId: number, colId: number) {
+  async getCards(userId: number, colId: number): Promise<Card[]> {
     return await this.cardsRepository
       .createQueryBuilder('card')
       .leftJoin('user_column', 'user_column', 'user_column.id = :colId', {
         colId,
       })
+      .leftJoinAndSelect('card.comments', 'comments')
       .where('user_column.user_id = :userId', { userId })
       .andWhere('user_column.id = :colId', { colId })
       .getMany();
   }
 
-  async updateCard(cardId: number, name: string) {
+  async updateCard(cardId: number, name: string): Promise<Card> {
     return await this.cardsRepository.save({ id: cardId, name });
   }
 }
@@ -98,19 +104,30 @@ export class DbColumnService {
     private colsRepository: Repository<UserColumn>,
   ) {}
 
-  async createColumn(userId: number, name: string) {
+  async createColumn(userId: number, name: string): Promise<UserColumn> {
     return this.colsRepository.save({ name, user_id: userId });
   }
 
-  async getColumn(userId: number, colId: number) {
-    return await this.colsRepository.findOneBy({ id: colId, user_id: userId });
+  async getColumn(userId: number, colId: number): Promise<UserColumn> {
+    const columns = await this.colsRepository.find({
+      where: { id: colId, user_id: userId },
+      relations: ['cards'],
+    });
+    return columns.pop();
   }
 
-  async getColumns(userId: number) {
-    return await this.colsRepository.find({ where: { user_id: userId } });
+  async getColumns(userId: number): Promise<UserColumn[]> {
+    return await this.colsRepository.find({
+      where: { user_id: userId },
+      relations: ['cards'],
+    });
   }
 
-  async updateColumn(userId: number, colId: number, name: string) {
+  async updateColumn(
+    userId: number,
+    colId: number,
+    name: string,
+  ): Promise<UserColumn> {
     return await this.colsRepository.save({ id: colId, user_id: userId, name });
   }
 }
@@ -122,20 +139,28 @@ export class DbUserService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async createUser(email: string, password: string) {
+  async createUser(email: string, password: string): Promise<User> {
     return await this.usersRepository.save({ email, password });
   }
 
-  async getUser(id: number) {
-    return await this.usersRepository.findOneBy({ id });
+  async getUser(id: number): Promise<User> {
+    const users = await this.usersRepository.find({
+      where: { id },
+      relations: ['columns'],
+    });
+    return users.pop();
   }
 
-  async getUserByCred(email: string, password: string) {
-    return await this.usersRepository.findOneBy({ email, password });
+  async getUserByCred(email: string, password: string): Promise<User> {
+    const users = await this.usersRepository.find({
+      where: { email, password },
+      relations: ['columns'],
+    });
+    return users.pop();
   }
 
-  async updateEmail(id: number, email: string) {
-    await this.usersRepository.save({ id, email });
+  async updateEmail(id: number, email: string): Promise<User> {
+    return await this.usersRepository.save({ id, email });
   }
 
   async userExists(email: string): Promise<boolean> {
