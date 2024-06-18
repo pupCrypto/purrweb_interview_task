@@ -8,16 +8,19 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import UserService from './user.service';
 import { UserDto, UpdateUserEmailDto } from './user.dto';
 import { AuthGuard, AuthParam } from 'src/auth/auth.decorator';
 import Auth from 'src/auth/auth';
 import { EmailsMustDifferError } from './errors';
 
+@ApiTags('users')
 @Controller()
 export default class UserController {
   constructor(private readonly service: UserService) {}
 
+  @ApiBearerAuth()
   @Get('/users')
   @UseGuards(AuthGuard)
   async getInfo(
@@ -28,6 +31,7 @@ export default class UserController {
     return await this.service.getInfo(auth.user.id, addRelation);
   }
 
+  @ApiBearerAuth()
   @Put('/users')
   @UseGuards(AuthGuard)
   async updateEmail(@AuthParam() auth: Auth, @Body() dto: UpdateUserEmailDto) {

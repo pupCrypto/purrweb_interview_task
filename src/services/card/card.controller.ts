@@ -11,16 +11,20 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import Auth from 'src/auth/auth';
 import { AuthGuard, AuthParam } from 'src/auth/auth.decorator';
 
 import { CardDto } from './card.dto';
 import CardService from './card.service';
 
+@ApiBearerAuth()
+@ApiTags('cards')
 @Controller()
 export default class CardController {
   constructor(private readonly service: CardService) {}
 
+  @ApiOperation({ summary: 'Create card' })
   @UseGuards(AuthGuard)
   @Post('/users/columns/:colId/cards')
   async createCard(
@@ -31,6 +35,7 @@ export default class CardController {
     return await this.service.createCard(auth.user.id, colId, dto.name);
   }
 
+  @ApiOperation({ summary: 'Delete current card' })
   @UseGuards(AuthGuard)
   @Delete('/users/columns/:colId/cards/:cardId')
   async deleteCard(
@@ -41,6 +46,7 @@ export default class CardController {
     return await this.service.deleteCard(auth.user.id, colId, cardId);
   }
 
+  @ApiOperation({ summary: 'Delete all cards' })
   @UseGuards(AuthGuard)
   @Delete('/users/columns/:colId/cards')
   async deleteCards(
@@ -50,6 +56,7 @@ export default class CardController {
     return await this.service.deleteCards(auth.user.id, colId);
   }
 
+  @ApiOperation({ summary: 'Get card' })
   @UseGuards(AuthGuard)
   @Get('/users/columns/:colId/cards/:cardId')
   async getCard(
@@ -62,6 +69,7 @@ export default class CardController {
     return await this.service.getCard(auth.user.id, colId, cardId, addRelation);
   }
 
+  @ApiOperation({ summary: 'Get all cards' })
   @UseGuards(AuthGuard)
   @Get('/users/columns/:colId/cards')
   async getCards(
@@ -73,6 +81,7 @@ export default class CardController {
     return await this.service.getCards(auth.user.id, colId, addRelation);
   }
 
+  @ApiOperation({ summary: 'Update card name' })
   @UseGuards(AuthGuard)
   @Put('/users/columns/:colId/cards/:cardId')
   async updateCard(

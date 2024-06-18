@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 import { initConnection } from './db/con';
 import CardModule from './services/card/card.module';
@@ -16,7 +14,7 @@ import UserModule from './services/user/user.module';
     UserModule,
     initConnection(),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

@@ -9,16 +9,20 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import Auth from 'src/auth/auth';
 import { AuthGuard, AuthParam } from 'src/auth/auth.decorator';
 
 import { CommentDto } from './comment.dto';
 import CommentService from './comment.service';
 
+@ApiBearerAuth()
+@ApiTags('comments')
 @Controller()
 export default class CommentController {
   constructor(private readonly service: CommentService) {}
 
+  @ApiOperation({ summary: 'Create comment' })
   @UseGuards(AuthGuard)
   @Post('/users/columns/:colId/cards/:cardId/comments')
   async createComment(
@@ -35,6 +39,7 @@ export default class CommentController {
     );
   }
 
+  @ApiOperation({ summary: 'Delete comment' })
   @UseGuards(AuthGuard)
   @Delete('/users/columns/:colId/cards/:cardId/comments/:comId')
   async deleteCard(
@@ -46,6 +51,7 @@ export default class CommentController {
     return await this.service.deleteComment(auth.user.id, colId, cardId, comId);
   }
 
+  @ApiOperation({ summary: 'Delete comments' })
   @UseGuards(AuthGuard)
   @Delete('/users/columns/:colId/cards/:cardId/comments')
   async deleteCards(
@@ -56,6 +62,7 @@ export default class CommentController {
     return await this.service.deleteComments(auth.user.id, colId, cardId);
   }
 
+  @ApiOperation({ summary: 'Get comment' })
   @UseGuards(AuthGuard)
   @Get('/users/columns/:colId/cards/:cardId/comments/:comId')
   async getComment(
@@ -67,6 +74,7 @@ export default class CommentController {
     return await this.service.getComment(auth.user.id, colId, cardId, comId);
   }
 
+  @ApiOperation({ summary: 'Get comments' })
   @UseGuards(AuthGuard)
   @Get('/users/columns/:colId/cards/:cardId/comments')
   async getCards(
@@ -77,6 +85,7 @@ export default class CommentController {
     return await this.service.getComments(auth.user.id, colId, cardId);
   }
 
+  @ApiOperation({ summary: 'Update comment content' })
   @UseGuards(AuthGuard)
   @Put('/users/columns/:colId/cards/:cardId/comments/:comId')
   async updateCard(
