@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -32,6 +33,27 @@ export default class CommentController {
       cardId,
       dto.content,
     );
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/users/columns/:colId/cards/:cardId/comments/:comId')
+  async deleteCard(
+    @AuthParam() auth: Auth,
+    @Param('colId', ParseIntPipe) colId: number,
+    @Param('cardId', ParseIntPipe) cardId: number,
+    @Param('comId', ParseIntPipe) comId: number,
+  ) {
+    return await this.service.deleteComment(auth.user.id, colId, cardId, comId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/users/columns/:colId/cards/:cardId/comments')
+  async deleteCards(
+    @AuthParam() auth: Auth,
+    @Param('colId', ParseIntPipe) colId: number,
+    @Param('cardId', ParseIntPipe) cardId: number,
+  ) {
+    return await this.service.deleteComments(auth.user.id, colId, cardId);
   }
 
   @UseGuards(AuthGuard)

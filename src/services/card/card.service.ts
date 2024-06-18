@@ -34,6 +34,18 @@ export default class CardService extends CardBelonger {
     }
   }
 
+  async deleteCard(userId: number, colId: number, cardId: number) {
+    await this.checkCardBelongsToUser(userId, colId, cardId);
+    await this.cardsMan.deleteCard(colId, cardId);
+    return { status: STATUS.OK, msg: MSG.CARD_DELETED };
+  }
+
+  async deleteCards(userId: number, colId: number) {
+    await this.checkColumnBelongsToUser(userId, colId);
+    await this.cardsMan.deleteCards(colId);
+    return { status: STATUS.OK, msg: MSG.CARDS_DELETED };
+  }
+
   async getCard(
     userId: number,
     colId: number,

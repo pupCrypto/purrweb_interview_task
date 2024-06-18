@@ -27,6 +27,16 @@ export default class ColumnService {
     }
   }
 
+  async deleteColumn(userId: number, colId: number) {
+    await this.columnsMan.deleteColumn(userId, colId);
+    return { status: STATUS.OK, msg: MSG.COLUMN_DELETED };
+  }
+
+  async deleteColumns(userId: number) {
+    await this.columnsMan.deleteColumns(userId);
+    return { status: STATUS.OK, msg: MSG.COLUMNS_DELETED };
+  }
+
   async getColumn(userId: number, colId: number, addRelation: boolean = false) {
     const column = await this.columnsMan.getColumn(userId, colId, addRelation);
     if (isNull(column)) {

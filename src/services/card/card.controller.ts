@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseBoolPipe,
@@ -28,6 +29,25 @@ export default class CardController {
     @Param('colId', ParseIntPipe) colId: number,
   ) {
     return await this.service.createCard(auth.user.id, colId, dto.name);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/users/columns/:colId/cards/:cardId')
+  async deleteCard(
+    @AuthParam() auth: Auth,
+    @Param('colId', ParseIntPipe) colId: number,
+    @Param('cardId', ParseIntPipe) cardId: number,
+  ) {
+    return await this.service.deleteCard(auth.user.id, colId, cardId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/users/columns/:colId/cards')
+  async deleteCards(
+    @AuthParam() auth: Auth,
+    @Param('colId', ParseIntPipe) colId: number,
+  ) {
+    return await this.service.deleteCards(auth.user.id, colId);
   }
 
   @UseGuards(AuthGuard)

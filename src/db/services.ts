@@ -15,6 +15,23 @@ export class DbCommentService {
     return await this.commentsRepository.save({ card_id: cardId, content });
   }
 
+  async deleteComment(cardId: number, comId: number) {
+    return await this.commentsRepository
+      .createQueryBuilder('comments')
+      .delete()
+      .where('comments.card_id = :cardId', { cardId })
+      .andWhere('comments.id = :comId', { comId })
+      .execute();
+  }
+
+  async deleteComments(cardId: number) {
+    return await this.commentsRepository
+      .createQueryBuilder('comments')
+      .delete()
+      .where('comments.card_id = :cardId', { cardId })
+      .execute();
+  }
+
   async getComment(
     userId: number,
     colId: number,
@@ -22,15 +39,15 @@ export class DbCommentService {
     commentId: number,
   ): Promise<Comment> {
     return await this.commentsRepository
-      .createQueryBuilder('comment')
-      .leftJoin('card', 'card', 'card.id = :cardId', { cardId })
-      .leftJoin('user_column', 'user_column', 'user_column.id = :colId', {
+      .createQueryBuilder('comments')
+      .leftJoin('cards', 'cards', 'cards.id = :cardId', { cardId })
+      .leftJoin('columns', 'columns', 'columns.id = :colId', {
         colId,
       })
-      .where('user_column.user_id = :userId', { userId })
-      .andWhere('user_column.id = :colId', { colId })
-      .andWhere('card.id = :cardId', { cardId })
-      .andWhere('comment.id = :commentId', { commentId })
+      .where('columns.user_id = :userId', { userId })
+      .andWhere('columns.id = :colId', { colId })
+      .andWhere('cards.id = :cardId', { cardId })
+      .andWhere('comments.id = :commentId', { commentId })
       .getOne();
   }
 
@@ -40,14 +57,14 @@ export class DbCommentService {
     cardId: number,
   ): Promise<Comment[]> {
     return await this.commentsRepository
-      .createQueryBuilder('comment')
-      .leftJoin('card', 'card', 'card.id = :cardId', { cardId })
-      .leftJoin('user_column', 'user_column', 'user_column.id = :colId', {
+      .createQueryBuilder('comments')
+      .leftJoin('cards', 'cards', 'cards.id = :cardId', { cardId })
+      .leftJoin('columns', 'columns', 'columns.id = :colId', {
         colId,
       })
-      .where('user_column.user_id = :userId', { userId })
-      .andWhere('user_column.id = :colId', { colId })
-      .andWhere('card.id = :cardId', { cardId })
+      .where('columns.user_id = :userId', { userId })
+      .andWhere('columns.id = :colId', { colId })
+      .andWhere('cards.id = :cardId', { cardId })
       .getMany();
   }
 
@@ -67,6 +84,24 @@ export class DbCardService {
     return await this.cardsRepository.save({ name, column_id: colId });
   }
 
+  async deleteCard(colId: number, cardId: number) {
+    return await this.cardsRepository
+      .createQueryBuilder('cards')
+      .delete()
+      .from(Card)
+      .where('cards.column_id = :colId', { colId })
+      .andWhere('cards.id = :cardId', { cardId })
+      .execute();
+  }
+
+  async deleteCards(colId: number) {
+    return await this.cardsRepository
+      .createQueryBuilder('cards')
+      .delete()
+      .where('cards.column_id = :colId', { colId })
+      .execute();
+  }
+
   async getCard(
     userId: number,
     colId: number,
@@ -74,17 +109,18 @@ export class DbCardService {
     addRelation: boolean = false,
   ): Promise<Card> {
     let primeSelect = this.cardsRepository
-      .createQueryBuilder('card')
-      .leftJoin('user_column', 'user_column', 'user_column.id = :colId', {
+      .createQueryBuilder('cards')
+      .select('cards')
+      .leftJoin('columns', 'columns', 'columns.id = :colId', {
         colId,
       });
     if (addRelation) {
-      primeSelect = primeSelect.leftJoinAndSelect('card.comments', 'comments');
+      primeSelect = primeSelect.leftJoinAndSelect('cards.comments', 'comments');
     }
     return await primeSelect
-      .where('user_column.user_id = :userId', { userId })
-      .andWhere('user_column.id = :colId', { colId })
-      .andWhere('card.id = :cardId', { cardId })
+      .where('columns.user_id = :userId', { userId })
+      .andWhere('columns.id = :colId', { colId })
+      .andWhere('cards.id = :cardId', { cardId })
       .getOne();
   }
 
@@ -94,16 +130,16 @@ export class DbCardService {
     addRelation: boolean = false,
   ): Promise<Card[]> {
     let primeSelect = this.cardsRepository
-      .createQueryBuilder('card')
-      .leftJoin('user_column', 'user_column', 'user_column.id = :colId', {
+      .createQueryBuilder('cards')
+      .leftJoin('columns', 'columns', 'columns.id = :colId', {
         colId,
       });
     if (addRelation) {
-      primeSelect = primeSelect.leftJoinAndSelect('card.comments', 'comments');
+      primeSelect = primeSelect.leftJoinAndSelect('cards.comments', 'comments');
     }
     return await primeSelect
-      .where('user_column.user_id = :userId', { userId })
-      .andWhere('user_column.id = :colId', { colId })
+      .where('columns.user_id = :userId', { userId })
+      .andWhere('columns.id = :colId', { colId })
       .getMany();
   }
 
@@ -121,6 +157,23 @@ export class DbColumnService {
 
   async createColumn(userId: number, name: string): Promise<UserColumn> {
     return this.colsRepository.save({ name, user_id: userId });
+  }
+
+  async deleteColumn(userId: number, colId: number) {
+    return await this.colsRepository
+      .createQueryBuilder('columns')
+      .delete()
+      .where('columns.user_id = :userId', { userId })
+      .andWhere('columns.id = :colId', { colId })
+      .execute();
+  }
+
+  async deleteColumns(userId: number) {
+    return await this.colsRepository
+      .createQueryBuilder('columns')
+      .delete()
+      .where('columns.user_id = :userId', { userId })
+      .execute();
   }
 
   async getColumn(

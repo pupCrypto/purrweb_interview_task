@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseBoolPipe,
@@ -24,6 +25,21 @@ export default class ColumnController {
   @Post('/users/columns')
   async createColumn(@AuthParam() auth: Auth, @Body() dto: ColumnDto) {
     return await this.service.createColumn(auth.user.id, dto.name);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/users/columns/:colId')
+  async deleteColumn(
+    @AuthParam() auth: Auth,
+    @Param('colId', ParseIntPipe) colId: number,
+  ) {
+    return await this.service.deleteColumn(auth.user.id, colId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/users/columns')
+  async deleteColumns(@AuthParam() auth: Auth) {
+    return await this.service.deleteColumns(auth.user.id);
   }
 
   @UseGuards(AuthGuard)
