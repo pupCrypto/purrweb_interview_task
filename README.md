@@ -1,6 +1,6 @@
 # Interview task Docs
 To avoid possible errors please check **src/config.ts**
-To see docs page you can request **/docs** endpoint.
+To see docs page you can request **http://localhost:3000/docs** endpoint.
 
 # Nest generated Docs
 
