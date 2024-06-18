@@ -2,7 +2,7 @@ enum SWAGGER {
   TITLE = 'Purrweb interview task',
   DESCRIPTION = 'The Purrweb interview task API description. \n' +
     'To make request to secure endpoint to need to get an access token in /api/users/login endpoint. \n' +
-    'Then you need to pass the access token to Authorization header.',
+    'Then you need to pass the access token to Authorization header and it will look like Authorization: Bearer access_token.',
   VERSION = '1.0',
 }
 

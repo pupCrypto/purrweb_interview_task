@@ -17,6 +17,7 @@ import { AuthGuard, AuthParam } from 'src/auth/auth.decorator';
 
 import { CardDto } from './card.dto';
 import CardService from './card.service';
+import { CardSwagger } from 'src/swagger/card.swagger';
 
 @ApiBearerAuth()
 @ApiTags('cards')
@@ -25,6 +26,8 @@ export default class CardController {
   constructor(private readonly service: CardService) {}
 
   @ApiOperation({ summary: 'Create card' })
+  @CardSwagger.createCard_201_response()
+  @CardSwagger.createCard_400_response()
   @UseGuards(AuthGuard)
   @Post('/users/columns/:colId/cards')
   async createCard(
@@ -36,6 +39,8 @@ export default class CardController {
   }
 
   @ApiOperation({ summary: 'Delete current card' })
+  @CardSwagger.deleteCard_200_response()
+  @CardSwagger.deleteCard_403_response()
   @UseGuards(AuthGuard)
   @Delete('/users/columns/:colId/cards/:cardId')
   async deleteCard(
@@ -47,6 +52,8 @@ export default class CardController {
   }
 
   @ApiOperation({ summary: 'Delete all cards' })
+  @CardSwagger.deleteCards_200_response()
+  @CardSwagger.deleteCards_403_response()
   @UseGuards(AuthGuard)
   @Delete('/users/columns/:colId/cards')
   async deleteCards(
@@ -57,6 +64,9 @@ export default class CardController {
   }
 
   @ApiOperation({ summary: 'Get card' })
+  @CardSwagger.getCard_200_response()
+  @CardSwagger.getCard_403_response()
+  @CardSwagger.getCard_404_response()
   @UseGuards(AuthGuard)
   @Get('/users/columns/:colId/cards/:cardId')
   async getCard(
@@ -70,6 +80,8 @@ export default class CardController {
   }
 
   @ApiOperation({ summary: 'Get all cards' })
+  @CardSwagger.getCards_200_response()
+  @CardSwagger.getCards_403_response()
   @UseGuards(AuthGuard)
   @Get('/users/columns/:colId/cards')
   async getCards(
@@ -82,6 +94,8 @@ export default class CardController {
   }
 
   @ApiOperation({ summary: 'Update card name' })
+  @CardSwagger.updateCard_200_response()
+  @CardSwagger.updateCard_403_response()
   @UseGuards(AuthGuard)
   @Put('/users/columns/:colId/cards/:cardId')
   async updateCard(

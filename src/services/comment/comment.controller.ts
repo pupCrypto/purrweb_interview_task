@@ -15,6 +15,7 @@ import { AuthGuard, AuthParam } from 'src/auth/auth.decorator';
 
 import { CommentDto } from './comment.dto';
 import CommentService from './comment.service';
+import { CommentSwagger } from 'src/swagger/comment.swagger';
 
 @ApiBearerAuth()
 @ApiTags('comments')
@@ -23,6 +24,8 @@ export default class CommentController {
   constructor(private readonly service: CommentService) {}
 
   @ApiOperation({ summary: 'Create comment' })
+  @CommentSwagger.createComment_201_response()
+  @CommentSwagger.createComment_400_response()
   @UseGuards(AuthGuard)
   @Post('/users/columns/:colId/cards/:cardId/comments')
   async createComment(
@@ -40,9 +43,11 @@ export default class CommentController {
   }
 
   @ApiOperation({ summary: 'Delete comment' })
+  @CommentSwagger.deleteComment_200_response()
+  @CommentSwagger.deleteComment_403_response()
   @UseGuards(AuthGuard)
   @Delete('/users/columns/:colId/cards/:cardId/comments/:comId')
-  async deleteCard(
+  async deleteComment(
     @AuthParam() auth: Auth,
     @Param('colId', ParseIntPipe) colId: number,
     @Param('cardId', ParseIntPipe) cardId: number,
@@ -52,9 +57,11 @@ export default class CommentController {
   }
 
   @ApiOperation({ summary: 'Delete comments' })
+  @CommentSwagger.deleteComments_200_response()
+  @CommentSwagger.deleteComments_403_response()
   @UseGuards(AuthGuard)
   @Delete('/users/columns/:colId/cards/:cardId/comments')
-  async deleteCards(
+  async deleteComments(
     @AuthParam() auth: Auth,
     @Param('colId', ParseIntPipe) colId: number,
     @Param('cardId', ParseIntPipe) cardId: number,
@@ -63,6 +70,9 @@ export default class CommentController {
   }
 
   @ApiOperation({ summary: 'Get comment' })
+  @CommentSwagger.getComment_200_response()
+  @CommentSwagger.getComment_403_response()
+  @CommentSwagger.getComment_404_response()
   @UseGuards(AuthGuard)
   @Get('/users/columns/:colId/cards/:cardId/comments/:comId')
   async getComment(
@@ -75,9 +85,11 @@ export default class CommentController {
   }
 
   @ApiOperation({ summary: 'Get comments' })
+  @CommentSwagger.getComments_200_response()
+  @CommentSwagger.getComments_403_response()
   @UseGuards(AuthGuard)
   @Get('/users/columns/:colId/cards/:cardId/comments')
-  async getCards(
+  async getComments(
     @AuthParam() auth: Auth,
     @Param('cardId', ParseIntPipe) cardId: number,
     @Param('colId', ParseIntPipe) colId: number,
@@ -86,9 +98,11 @@ export default class CommentController {
   }
 
   @ApiOperation({ summary: 'Update comment content' })
+  @CommentSwagger.updateComment_200_response()
+  @CommentSwagger.updateComment_403_response()
   @UseGuards(AuthGuard)
   @Put('/users/columns/:colId/cards/:cardId/comments/:comId')
-  async updateCard(
+  async updateComment(
     @AuthParam() auth: Auth,
     @Param('cardId', ParseIntPipe) cardId: number,
     @Param('colId', ParseIntPipe) colId: number,

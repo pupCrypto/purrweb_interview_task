@@ -3,10 +3,10 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import AuthService from './auth.service';
+import { BearerTokenNotProvided } from 'src/errors';
+import { isNull } from 'src/utils/utils';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -14,14 +14,13 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const bearerToken = request.headers.authorization;
-    if (bearerToken === undefined) {
-      throw new HttpException(
-        'You must provide Authorization header',
-        HttpStatus.BAD_REQUEST,
-      );
+    const bearerToken: string = request.headers.authorization;
+    console.log(bearerToken);
+    if (isNull(bearerToken)) {
+      throw new BearerTokenNotProvided();
     }
-    const auth = await this.authService.authenticate(bearerToken);
+    const clearToken = bearerToken.replace('Bearer ', '');
+    const auth = await this.authService.authenticate(clearToken);
     request.auth = auth;
     return !!auth;
   }

@@ -14,7 +14,7 @@ export default class ColumnService {
   async createColumn(userId: number, name: string) {
     try {
       const column = await this.columnsMan.createColumn(userId, name);
-      return { status: STATUS.OK, msg: MSG.COLUMN_CREATED, id: column.id };
+      return { status: STATUS.OK, message: MSG.COLUMN_CREATED, id: column.id };
     } catch (e) {
       switch (e.code) {
         case '23505': {
@@ -29,12 +29,12 @@ export default class ColumnService {
 
   async deleteColumn(userId: number, colId: number) {
     await this.columnsMan.deleteColumn(userId, colId);
-    return { status: STATUS.OK, msg: MSG.COLUMN_DELETED };
+    return { status: STATUS.OK, message: MSG.COLUMN_DELETED };
   }
 
   async deleteColumns(userId: number) {
     await this.columnsMan.deleteColumns(userId);
-    return { status: STATUS.OK, msg: MSG.COLUMNS_DELETED };
+    return { status: STATUS.OK, message: MSG.COLUMNS_DELETED };
   }
 
   async getColumn(userId: number, colId: number, addRelation: boolean = false) {
@@ -52,6 +52,6 @@ export default class ColumnService {
 
   async updateColumn(userId: number, colId: number, name: string) {
     await this.columnsMan.updateColumn(userId, colId, name);
-    return { status: STATUS.OK, msg: MSG.COLUMN_UPDATED };
+    return { status: STATUS.OK, message: MSG.COLUMN_UPDATED };
   }
 }

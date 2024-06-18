@@ -21,7 +21,7 @@ export default class CardService extends CardBelonger {
     await this.checkColumnBelongsToUser(userId, colId);
     try {
       const card = await this.cardsMan.createCard(colId, name);
-      return { status: STATUS.OK, id: card.id, msg: MSG.CARD_CREATED };
+      return { status: STATUS.OK, id: card.id, message: MSG.CARD_CREATED };
     } catch (e) {
       switch (e.code) {
         case '23505': {
@@ -37,13 +37,13 @@ export default class CardService extends CardBelonger {
   async deleteCard(userId: number, colId: number, cardId: number) {
     await this.checkCardBelongsToUser(userId, colId, cardId);
     await this.cardsMan.deleteCard(colId, cardId);
-    return { status: STATUS.OK, msg: MSG.CARD_DELETED };
+    return { status: STATUS.OK, message: MSG.CARD_DELETED };
   }
 
   async deleteCards(userId: number, colId: number) {
     await this.checkColumnBelongsToUser(userId, colId);
     await this.cardsMan.deleteCards(colId);
-    return { status: STATUS.OK, msg: MSG.CARDS_DELETED };
+    return { status: STATUS.OK, message: MSG.CARDS_DELETED };
   }
 
   async getCard(
@@ -77,6 +77,6 @@ export default class CardService extends CardBelonger {
   ) {
     await this.checkCardBelongsToUser(userId, colId, cardId);
     await this.cardsMan.updateCard(cardId, name);
-    return { status: STATUS.OK, msg: MSG.CARD_UPDATED };
+    return { status: STATUS.OK, message: MSG.CARD_UPDATED };
   }
 }

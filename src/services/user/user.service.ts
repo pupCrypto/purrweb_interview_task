@@ -34,7 +34,7 @@ export default class UserService {
 
   async updateEmail(id: number, email: string) {
     await this.dbService.updateEmail(id, email);
-    return { status: STATUS.OK, msg: MSG.USER_UPDATED };
+    return { status: STATUS.OK, message: MSG.USER_UPDATED };
   }
 
   async register(email: string, password: string) {
@@ -48,7 +48,7 @@ export default class UserService {
       status: STATUS.OK,
       id: user.id,
       email: email,
-      msg: MSG.USER_REGISTERED,
+      message: MSG.USER_REGISTERED,
     };
   }
 }

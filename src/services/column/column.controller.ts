@@ -17,6 +17,7 @@ import { AuthGuard, AuthParam } from 'src/auth/auth.decorator';
 
 import { ColumnDto } from './column.dto';
 import ColumnService from './column.service';
+import { ColumnSwagger } from 'src/swagger/column.swagger';
 
 @ApiBearerAuth()
 @ApiTags('columns')
@@ -25,6 +26,8 @@ export default class ColumnController {
   constructor(private readonly service: ColumnService) {}
 
   @ApiOperation({ summary: 'Create column' })
+  @ColumnSwagger.createColumn_201_response()
+  @ColumnSwagger.createColumn_400_response()
   @UseGuards(AuthGuard)
   @Post('/users/columns')
   async createColumn(@AuthParam() auth: Auth, @Body() dto: ColumnDto) {
@@ -32,6 +35,8 @@ export default class ColumnController {
   }
 
   @ApiOperation({ summary: 'Delete column' })
+  @ColumnSwagger.deleteColumn_200_response()
+  @ColumnSwagger.deleteColumn_403_response()
   @UseGuards(AuthGuard)
   @Delete('/users/columns/:colId')
   async deleteColumn(
@@ -42,6 +47,8 @@ export default class ColumnController {
   }
 
   @ApiOperation({ summary: 'Delete columns' })
+  @ColumnSwagger.deleteColumns_200_response()
+  @ColumnSwagger.deleteColumns_403_response()
   @UseGuards(AuthGuard)
   @Delete('/users/columns')
   async deleteColumns(@AuthParam() auth: Auth) {
@@ -49,6 +56,9 @@ export default class ColumnController {
   }
 
   @ApiOperation({ summary: 'Get column' })
+  @ColumnSwagger.getColumn_200_response()
+  @ColumnSwagger.getColumn_403_response()
+  @ColumnSwagger.getColumn_404_response()
   @UseGuards(AuthGuard)
   @Get('/users/columns/:colId')
   async getColumn(
@@ -61,6 +71,8 @@ export default class ColumnController {
   }
 
   @ApiOperation({ summary: 'Get columns' })
+  @ColumnSwagger.getColumns_200_response()
+  @ColumnSwagger.getColumns_403_response()
   @UseGuards(AuthGuard)
   @Get('/users/columns')
   async getColumns(
@@ -72,6 +84,8 @@ export default class ColumnController {
   }
 
   @ApiOperation({ summary: 'Update column name' })
+  @ColumnSwagger.updateColumn_200_response()
+  @ColumnSwagger.updateColumn_403_response()
   @UseGuards(AuthGuard)
   @Put('/users/:userId/columns/:colId')
   async updateColumn(

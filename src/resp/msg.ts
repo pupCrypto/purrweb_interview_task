@@ -8,6 +8,7 @@ enum MSG {
 
   COLUMN_CREATED = 'Колонка была успешно создана',
   COLUMN_DELETED = 'Колонка была успешно удалена',
+  COLUMN_NAME_CANNOT_DUPLICATE = 'Имя колонки не должно повторяться',
   COLUMN_NOT_FOUND = 'Колонка не найдена',
   COLUMN_UPDATED = 'Колонка была успешно обновлена',
   COLUMNS_DELETED = 'Колонки были успешно удалены',

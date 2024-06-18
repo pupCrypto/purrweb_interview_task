@@ -27,7 +27,11 @@ export default class CommentService extends CommentBelonger {
     await this.checkCardBelongsToUser(userId, colId, cardId);
     try {
       const comment = await this.commentsMan.createComment(cardId, content);
-      return { status: STATUS.OK, id: comment.id, msg: MSG.COMMENT_CREATED };
+      return {
+        status: STATUS.OK,
+        id: comment.id,
+        message: MSG.COMMENT_CREATED,
+      };
     } catch (e) {
       switch (e.code) {
         case '23505': {
@@ -48,13 +52,13 @@ export default class CommentService extends CommentBelonger {
   ) {
     await this.checkCommentBelongsToUser(userId, colId, cardId, comId);
     await this.commentsMan.deleteComment(cardId, comId);
-    return { status: STATUS.OK, msg: MSG.COMMENT_DELETED };
+    return { status: STATUS.OK, message: MSG.COMMENT_DELETED };
   }
 
   async deleteComments(userId: number, colId: number, cardId: number) {
     await this.checkCardBelongsToUser(userId, colId, cardId);
     await this.commentsMan.deleteComments(cardId);
-    return { status: STATUS.OK, msg: MSG.COMMENTS_DELETED };
+    return { status: STATUS.OK, message: MSG.COMMENTS_DELETED };
   }
 
   async getComment(
@@ -89,6 +93,6 @@ export default class CommentService extends CommentBelonger {
   ) {
     await this.checkCommentBelongsToUser(userId, colId, cardId, comId);
     await this.commentsMan.updateComment(comId, name);
-    return { status: STATUS.OK, msg: MSG.COMMENT_UPDATED };
+    return { status: STATUS.OK, message: MSG.COMMENT_UPDATED };
   }
 }
