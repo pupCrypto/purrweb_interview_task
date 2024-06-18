@@ -3,14 +3,15 @@ import {
   Controller,
   Get,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Post,
   Put,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import Auth from 'src/auth/auth';
 import { AuthGuard, AuthParam } from 'src/auth/auth.decorator';
-import { strictUserValidation } from 'src/auth/misc';
 
 import { ColumnDto } from './column.dto';
 import ColumnService from './column.service';
@@ -20,35 +21,30 @@ export default class ColumnController {
   constructor(private readonly service: ColumnService) {}
 
   @UseGuards(AuthGuard)
-  @Post('/users/:userId/columns')
-  async createColumn(
-    @AuthParam() auth: Auth,
-    @Param('userId', ParseIntPipe) userId: number,
-    @Body() dto: ColumnDto,
-  ) {
-    strictUserValidation(auth, userId);
-    return await this.service.createColumn(userId, dto.name);
+  @Post('/users/columns')
+  async createColumn(@AuthParam() auth: Auth, @Body() dto: ColumnDto) {
+    return await this.service.createColumn(auth.user.id, dto.name);
   }
 
   @UseGuards(AuthGuard)
-  @Get('/users/:userId/columns/:colId')
+  @Get('/users/columns/:colId')
   async getColumn(
     @AuthParam() auth: Auth,
     @Param('colId', ParseIntPipe) colId: number,
-    @Param('userId', ParseIntPipe) userId: number,
+    @Query('add-relation', new ParseBoolPipe({ optional: true }))
+    addRelation?: boolean,
   ) {
-    strictUserValidation(auth, userId);
-    return await this.service.getColumn(userId, colId);
+    return await this.service.getColumn(auth.user.id, colId, addRelation);
   }
 
   @UseGuards(AuthGuard)
-  @Get('/users/:userId/columns')
+  @Get('/users/columns')
   async getColumns(
     @AuthParam() auth: Auth,
-    @Param('userId', ParseIntPipe) userId: number,
+    @Query('add-relation', new ParseBoolPipe({ optional: true }))
+    addRelation?: boolean,
   ) {
-    strictUserValidation(auth, userId);
-    return await this.service.getColumns(userId);
+    return await this.service.getColumns(auth.user.id, addRelation);
   }
 
   @UseGuards(AuthGuard)
@@ -56,10 +52,8 @@ export default class ColumnController {
   async updateColumn(
     @AuthParam() auth: Auth,
     @Param('colId', ParseIntPipe) colId: number,
-    @Param('userId', ParseIntPipe) userId: number,
     @Body() dto: ColumnDto,
   ) {
-    strictUserValidation(auth, userId);
-    return await this.service.updateColumn(userId, colId, dto.name);
+    return await this.service.updateColumn(auth.user.id, colId, dto.name);
   }
 }

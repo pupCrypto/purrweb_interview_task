@@ -67,26 +67,41 @@ export class DbCardService {
     return await this.cardsRepository.save({ name, column_id: colId });
   }
 
-  async getCard(userId: number, colId: number, cardId: number): Promise<Card> {
-    return await this.cardsRepository
+  async getCard(
+    userId: number,
+    colId: number,
+    cardId: number,
+    addRelation: boolean = false,
+  ): Promise<Card> {
+    let primeSelect = this.cardsRepository
       .createQueryBuilder('card')
       .leftJoin('user_column', 'user_column', 'user_column.id = :colId', {
         colId,
-      })
-      .leftJoinAndSelect('card.comments', 'comments')
+      });
+    if (addRelation) {
+      primeSelect = primeSelect.leftJoinAndSelect('card.comments', 'comments');
+    }
+    return await primeSelect
       .where('user_column.user_id = :userId', { userId })
       .andWhere('user_column.id = :colId', { colId })
       .andWhere('card.id = :cardId', { cardId })
       .getOne();
   }
 
-  async getCards(userId: number, colId: number): Promise<Card[]> {
-    return await this.cardsRepository
+  async getCards(
+    userId: number,
+    colId: number,
+    addRelation: boolean = false,
+  ): Promise<Card[]> {
+    let primeSelect = this.cardsRepository
       .createQueryBuilder('card')
       .leftJoin('user_column', 'user_column', 'user_column.id = :colId', {
         colId,
-      })
-      .leftJoinAndSelect('card.comments', 'comments')
+      });
+    if (addRelation) {
+      primeSelect = primeSelect.leftJoinAndSelect('card.comments', 'comments');
+    }
+    return await primeSelect
       .where('user_column.user_id = :userId', { userId })
       .andWhere('user_column.id = :colId', { colId })
       .getMany();
@@ -108,18 +123,27 @@ export class DbColumnService {
     return this.colsRepository.save({ name, user_id: userId });
   }
 
-  async getColumn(userId: number, colId: number): Promise<UserColumn> {
+  async getColumn(
+    userId: number,
+    colId: number,
+    addRelation: boolean = false,
+  ): Promise<UserColumn> {
+    const relations = addRelation && ['cards'];
     const columns = await this.colsRepository.find({
       where: { id: colId, user_id: userId },
-      relations: ['cards'],
+      relations,
     });
     return columns.pop();
   }
 
-  async getColumns(userId: number): Promise<UserColumn[]> {
+  async getColumns(
+    userId: number,
+    addRelation: boolean = false,
+  ): Promise<UserColumn[]> {
+    const relations = addRelation && ['cards'];
     return await this.colsRepository.find({
       where: { user_id: userId },
-      relations: ['cards'],
+      relations,
     });
   }
 
@@ -143,10 +167,11 @@ export class DbUserService {
     return await this.usersRepository.save({ email, password });
   }
 
-  async getUser(id: number): Promise<User> {
+  async getUser(id: number, addRelation: boolean = false): Promise<User> {
+    const relations = addRelation && ['columns'];
     const users = await this.usersRepository.find({
       where: { id },
-      relations: ['columns'],
+      relations,
     });
     return users.pop();
   }

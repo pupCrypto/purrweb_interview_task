@@ -1,41 +1,40 @@
 import {
   Controller,
   Get,
+  ParseBoolPipe,
   Post,
   Body,
   Put,
-  Param,
-  ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import UserService from './user.service';
 import { UserDto, UpdateUserEmailDto } from './user.dto';
 import { AuthGuard, AuthParam } from 'src/auth/auth.decorator';
 import Auth from 'src/auth/auth';
 import { EmailsMustDifferError } from './errors';
-import { strictUserValidation } from 'src/auth/misc';
 
 @Controller()
 export default class UserController {
   constructor(private readonly service: UserService) {}
 
-  @Get('/users/:id')
-  async getInfo(@Param('id', ParseIntPipe) id: number) {
-    return await this.service.getInfo(id);
+  @Get('/users')
+  @UseGuards(AuthGuard)
+  async getInfo(
+    @AuthParam() auth: Auth,
+    @Query('add-relation', new ParseBoolPipe({ optional: true }))
+    addRelation?: boolean,
+  ) {
+    return await this.service.getInfo(auth.user.id, addRelation);
   }
 
-  @Put('/users/:id')
+  @Put('/users')
   @UseGuards(AuthGuard)
-  async updateEmail(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateUserEmailDto,
-    @AuthParam() auth: Auth,
-  ) {
-    strictUserValidation(auth, id);
+  async updateEmail(@AuthParam() auth: Auth, @Body() dto: UpdateUserEmailDto) {
     if (auth.user.email === dto.email) {
       throw new EmailsMustDifferError();
     }
-    return await this.service.updateEmail(id, dto.email);
+    return await this.service.updateEmail(auth.user.id, dto.email);
   }
 
   @Post('/users/login')

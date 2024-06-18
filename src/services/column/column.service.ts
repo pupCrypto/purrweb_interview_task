@@ -27,16 +27,16 @@ export default class ColumnService {
     }
   }
 
-  async getColumn(userId: number, colId: number) {
-    const column = await this.columnsMan.getColumn(userId, colId);
+  async getColumn(userId: number, colId: number, addRelation: boolean = false) {
+    const column = await this.columnsMan.getColumn(userId, colId, addRelation);
     if (isNull(column)) {
       throw new ColumnNotFound();
     }
     return { status: STATUS.OK, ...column };
   }
 
-  async getColumns(userId: number) {
-    const columns = await this.columnsMan.getColumns(userId);
+  async getColumns(userId: number, addRelation: boolean = false) {
+    const columns = await this.columnsMan.getColumns(userId, addRelation);
     return { status: STATUS.OK, columns: columns };
   }
 

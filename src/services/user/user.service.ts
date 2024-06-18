@@ -9,12 +9,17 @@ import { genJwtToken } from 'src/utils/jwt';
 export default class UserService {
   constructor(private readonly dbService: DbUserService) {}
 
-  async getInfo(id: number) {
-    const user = await this.dbService.getUser(id);
+  async getInfo(id: number, addRelation: boolean = false) {
+    const user = await this.dbService.getUser(id, addRelation);
     if (isNull(user)) {
       throw new HttpException(MSG.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    return { status: STATUS.OK, id: user.id, email: user.email };
+    return {
+      status: STATUS.OK,
+      id: user.id,
+      email: user.email,
+      columns: user.columns,
+    };
   }
 
   async login(email: string, password: string) {

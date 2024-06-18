@@ -34,16 +34,26 @@ export default class CardService extends CardBelonger {
     }
   }
 
-  async getCard(userId: number, colId: number, cardId: number) {
-    const card = await this.cardsMan.getCard(userId, colId, cardId);
+  async getCard(
+    userId: number,
+    colId: number,
+    cardId: number,
+    addRelation: boolean = false,
+  ) {
+    const card = await this.cardsMan.getCard(
+      userId,
+      colId,
+      cardId,
+      addRelation,
+    );
     if (isNull(card)) {
       throw new CardNotFound();
     }
     return { status: STATUS.OK, ...card };
   }
 
-  async getCards(userId: number, colId: number) {
-    const cards = await this.cardsMan.getCards(userId, colId);
+  async getCards(userId: number, colId: number, addRelation: boolean = false) {
+    const cards = await this.cardsMan.getCards(userId, colId, addRelation);
     return { status: STATUS.OK, cards: cards };
   }
 
